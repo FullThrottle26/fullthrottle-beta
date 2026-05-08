@@ -1,24 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Full Throttle — Race</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #C89B20;
+  --gold-light: #E8BC40;
+  --dark: #0A0E18;
+  --darker: #050810;
+  --mid: #141928;
+  --surface: #1A2035;
+  --border: rgba(200,155,32,0.2);
+  --text: #F0EDE6;
+  --muted: rgba(240,237,230,0.5);
+  --green: #3A8A3A;
+  --red: #C84020;
+  --blue: #2060C8;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--darker);
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
-Name	Size	Date Modified
-!UNKNOWN/		3/26/25, 6:11:50 PM
-$RECYCLE.BIN/		3/25/25, 7:13:03 PM
-Documents and Settings/		2/26/25, 12:38:45 AM
-hp/		11/6/24, 12:17:04 PM
-inetpub/		4/13/25, 4:15:18 PM
-Intel/		5/8/26, 1:01:16 PM
-OneDriveTemp/		2/22/26, 3:06:54 PM
-PerfLogs/		4/1/24, 3:26:06 AM
-Program Files/		5/8/26, 2:01:00 PM
-Program Files (x86)/		9/7/25, 4:33:30 PM
-ProgramData/		4/3/26, 2:13:36 PM
-Recovery/		3/25/25, 4:29:16 PM
-System Volume Information/		3/25/25, 6:29:24 PM
-System.Sav/		11/5/24, 10:28:52 PM
-Users/		4/21/25, 10:50:17 AM
-Windows/		4/9/26, 5:41:45 PM
-DumpStack.log.tmp	12.0 kB	5/8/26, 1:01:11 PM
-hiberfil.sys	3.1 GB	5/8/26, 1:01:08 PM
-logUploaderSettings_temp.ini	90 B	9/7/25, 4:36:52 PM
-logUploaderSettings.ini	90 B	9/7/25, 4:36:52 PM
-pagefile.sys	6.5 GB	5/8/26, 1:01:11 PM
-swapfile.sys	16.0 MB	5/8/26, 1:01:11 PM
+/* ── HEADER ── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--dark);
+  flex-shrink: 0;
+}
+.header-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px;
+  letter-spacing: 3px;
+}
+.header-logo span { color: var(--gold); }
+.game-code {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  letter-spacing: 3px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.game-code strong {
+  color: var(--gold);
+  font-size: 16px;
+  letter-spacing: 4px;
+  font-family: 'Bebas Neue', sans-serif;
+}
+.share-btn {
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--gold);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.share-btn:hover { background: rgba(200,155,32,0.1); }
+
+/* ── MAIN LAYOUT ── */
+.main {
+  display: grid;
+  grid-template-columns: 280px 1fr 280px;
+  grid-template-rows: auto 1fr;
+  gap: 0;
+  flex: 1;
+  min-height: 0;
+}
+@media(max-width:900px) {
+  .main { grid-template-columns: 1fr; grid-template-rows: auto; }
+}
+
+/* ── PLAYER PANELS ── */
+.player-panel {
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 16px;
+  background: var(--dark);
+}
+.player-panel.right { border-right: none; border-left: 1px solid var(--border); }
+
+.player-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.player-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 2px;
+}
+.player-name.you { color: var(--gold-light); }
+.player-name.opp { color: var(--muted); }
+.player-weapon {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+}
+
+/* ── CARD DISPLAY ── */
+.card-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.card {
+  width: 200px;
+  height: 125px;
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid var(--border);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.card.flipped { transform: rotateY(0deg); }
+.card.face-down {
+  background: linear-gradient(135deg, var(--mid) 0%, var(--surface) 100%);
+  border-color: rgba(200,155,32,0.15);
+  cursor: default;
+}
+.card.face-down::after {
+  content: 'FULL THROTTLE';
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: rgba(200,155,32,0.3);
+  white-space: nowrap;
+}
+
+/* Card scene background colors by state band */
+.card-scene {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, #1a3a5c 0%, #0d2035 60%, #0a1525 100%);
+}
+.card-scene.band-55 { background: linear-gradient(160deg, #3a2010 0%, #5c3018 60%, #2a1508 100%); }
+.card-scene.band-60 { background: linear-gradient(160deg, #1a3a1a 0%, #0d2d0d 60%, #0a1a0a 100%); }
+.card-scene.band-65 { background: linear-gradient(160deg, #2a1a3a 0%, #1a0d2d 60%, #100820 100%); }
+.card-scene.band-70 { background: linear-gradient(160deg, #1a2a3a 0%, #0d1e2d 60%, #0a1520 100%); }
+.card-scene.band-75 { background: linear-gradient(160deg, #3a3010 0%, #2d2608 60%, #1a1505 100%); }
+.card-scene.band-80 { background: linear-gradient(160deg, #3a1a10 0%, #2d1208 60%, #1a0a05 100%); }
+.card-scene.band-85 { background: linear-gradient(160deg, #2a3a1a 0%, #1e2d0d 60%, #141e08 100%); }
+.card-scene.band-90 { background: linear-gradient(160deg, #1a1a3a 0%, #12122d 60%, #0a0a1e 100%); }
+.card-scene.band-95 { background: linear-gradient(160deg, #2a2a3a 0%, #1e1e2d 60%, #141420 100%); }
+.card-scene.band-100 { background: linear-gradient(160deg, #0a1a2a 0%, #061018 60%, #030810 100%); }
+
+.card-content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 10px 6px;
+}
+.card-state-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.card-state-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: white;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  line-height: 1.1;
+  max-width: 110px;
+}
+.card-mph {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  line-height: 1;
+  color: white;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+}
+.card-mph-unit {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px;
+  color: rgba(255,255,255,0.6);
+  text-align: right;
+  margin-top: -2px;
+  letter-spacing: 1px;
+}
+.card-wildcard-badge {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: rgba(200,155,32,0.15);
+  padding: 1px 6px;
+  border: 1px solid rgba(200,155,32,0.4);
+}
+.card-footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.card-tier {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+}
+.card-weapon-badge {
+  padding: 2px 6px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.card-ft {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 7px;
+  letter-spacing: 3px;
+  color: rgba(255,255,255,0.25);
+  white-space: nowrap;
+}
+
+/* Weapon badge colors */
+.wb-Cruise    { background: rgba(100,150,220,0.3); color: #8BC4F8; border: 1px solid rgba(100,150,220,0.4); }
+.wb-Accelerate { background: rgba(100,180,100,0.3); color: #A8D888; border: 1px solid rgba(100,180,100,0.4); }
+.wb-Overdrive  { background: rgba(220,180,50,0.3); color: #F8D878; border: 1px solid rgba(220,180,50,0.4); }
+.wb-Turbo      { background: rgba(220,130,40,0.3); color: #F8A848; border: 1px solid rgba(220,130,40,0.4); }
+.wb-Nitro      { background: rgba(220,80,30,0.3); color: #F87848; border: 1px solid rgba(220,80,30,0.4); }
+.wb-Ghost      { background: rgba(100,80,200,0.3); color: #C8B8FF; border: 1px solid rgba(100,80,200,0.4); }
+
+.card-placeholder {
+  width: 200px; height: 125px;
+  border: 2px dashed var(--border);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.deck-count {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: center;
+}
+
+.flip-btn {
+  width: 200px;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  color: var(--darker);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 3px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+}
+.flip-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(200,155,32,0.4);
+}
+.flip-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.result-badge {
+  padding: 6px 16px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-radius: 4px;
+  text-align: center;
+}
+.result-advance { background: rgba(40,140,40,0.2); color: #6FD46F; border: 1px solid rgba(40,140,40,0.4); }
+.result-miss    { background: rgba(180,50,20,0.2); color: #F08060; border: 1px solid rgba(180,50,20,0.4); }
+.result-win     { background: rgba(200,155,32,0.2); color: var(--gold-light); border: 1px solid var(--border); }
+
+/* ── ROUTE BOARD ── */
+.board-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 16px;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+.route-header {
+  text-align: center;
+  margin-bottom: 8px;
+}
+.route-id-display {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: 4px;
+  color: var(--gold);
+  line-height: 1;
+}
+.route-name-display {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.stop-track {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.stop-row {
+  display: grid;
+  grid-template-columns: 28px 1fr 80px 60px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  transition: background 0.2s, border-color 0.2s;
+  position: relative;
+}
+.stop-row.active-mine  { border-color: var(--gold); background: rgba(200,155,32,0.08); }
+.stop-row.active-opp   { border-color: rgba(100,150,220,0.5); background: rgba(100,150,220,0.06); }
+.stop-row.active-both  { border-color: var(--red); background: rgba(200,64,32,0.08); }
+.stop-row.passed-mine  { background: rgba(40,120,40,0.06); border-color: rgba(40,120,40,0.25); }
+.stop-row.halfway      { border-top: 2px dashed rgba(200,155,32,0.3); }
+
+.stop-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  color: var(--muted);
+  text-align: center;
+}
+.stop-state {
+  font-family: 'Barlow Condensed', sans-serif;
+}
+.stop-state-name {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--text);
+}
+.stop-state-abbr {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+.stop-thresh {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  color: var(--muted);
+  text-align: right;
+}
+.stop-thresh span {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px;
+  display: block;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.stop-markers {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+.marker {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+}
+.marker-mine { background: var(--gold); }
+.marker-opp  { background: #6B9FE8; }
+
+/* ── STATUS BAR ── */
+.status-bar {
+  grid-column: 1 / -1;
+  padding: 10px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--dark);
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  overflow-x: auto;
+}
+.status-msg {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.status-msg.latest {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ── WAITING / WIN OVERLAYS ── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5,8,16,0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+.overlay-card {
+  text-align: center;
+  padding: 60px 48px;
+  border: 1px solid var(--border);
+  background: var(--mid);
+  max-width: 480px;
+  width: 90%;
+}
+.overlay-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 48px;
+  letter-spacing: 4px;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+.overlay-sub {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+.share-code {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px;
+  letter-spacing: 8px;
+  color: var(--gold);
+  padding: 16px 24px;
+  border: 1px solid var(--border);
+  background: var(--dark);
+  margin: 16px 0;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.share-code:hover { background: rgba(200,155,32,0.1); }
+.copy-hint {
+  font-size: 12px;
+  color: var(--muted);
+  font-family: 'Barlow Condensed', sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.share-link-display {
+  font-size: 11px;
+  color: var(--muted);
+  word-break: break-all;
+  padding: 8px 12px;
+  border: 1px dashed var(--border);
+  background: var(--darker);
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<!-- WAITING OVERLAY -->
+<div class="overlay" id="waitingOverlay">
+  <div class="overlay-card">
+    <div class="overlay-title" style="color:var(--gold)">Game<br>Created</div>
+    <div class="overlay-sub">Share this code with your opponent<br>or send them the link below</div>
+    <div class="share-code" id="shareCode" onclick="copyCode()">····</div>
+    <div class="copy-hint" id="copyHint">Click to copy code</div>
+    <div class="share-link-display" id="shareLink" onclick="copyLink()">Loading link...</div>
+    <div class="copy-hint" id="linkHint">Click to copy full link</div>
+    <div style="margin-top:24px;font-family:'Barlow Condensed';font-size:13px;color:var(--muted);letter-spacing:1px">
+      Waiting for opponent to join...
+      <br><span style="font-size:11px;opacity:0.6">This page will update automatically</span>
+    </div>
+  </div>
+</div>
+
+<!-- WIN OVERLAY -->
+<div class="overlay" id="winOverlay" style="display:none">
+  <div class="overlay-card">
+    <div class="overlay-title" id="winTitle">🏁</div>
+    <div class="overlay-sub" id="winSub">Race complete</div>
+    <a href="/" class="flip-btn" style="display:inline-block;text-decoration:none;margin-top:24px;padding:14px 40px">
+      Play Again
+    </a>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-logo">Full<span>Throttle</span> <span style="font-size:14px;color:var(--muted)">BETA</span></div>
+  <div class="game-code">Game Code: <strong id="headerCode">----</strong></div>
+  <button class="share-btn" onclick="copyLink()">Share Link</button>
+</header>
+
+<!-- MAIN GRID -->
+<div class="main" id="mainGrid">
+
+  <!-- MY PANEL (left) -->
+  <div class="player-panel" id="myPanel">
+    <div class="player-header">
+      <div class="player-name you" id="myName">You</div>
+      <div class="player-weapon" id="myWeapon">—</div>
+    </div>
+    <div class="card-area">
+      <div id="myCardDisplay">
+        <div class="card-placeholder">Your card</div>
+      </div>
+      <div class="deck-count" id="myDeckCount">— cards remaining</div>
+      <button class="flip-btn" id="flipBtn" onclick="flipCard()" disabled>Flip</button>
+      <div class="result-badge" id="myResult" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- BOARD (center) -->
+  <div class="board-area" id="boardArea">
+    <div class="route-header">
+      <div class="route-id-display" id="routeId">—</div>
+      <div class="route-name-display" id="routeName">Loading route...</div>
+    </div>
+    <div class="stop-track" id="stopTrack">
+      <!-- populated by JS -->
+    </div>
+  </div>
+
+  <!-- OPP PANEL (right) -->
+  <div class="player-panel right" id="oppPanel">
+    <div class="player-header">
+      <div class="player-name opp" id="oppName">Opponent</div>
+      <div class="player-weapon" id="oppWeapon">—</div>
+    </div>
+    <div class="card-area">
+      <div id="oppCardDisplay">
+        <div class="card-placeholder">Opponent's card</div>
+      </div>
+      <div class="deck-count" id="oppDeckCount">Waiting...</div>
+      <div class="result-badge" id="oppResult" style="display:none"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- STATUS BAR -->
+<div class="status-bar" id="statusBar">
+  <span class="status-msg">Waiting for game to start...</span>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const GAME_ID = params.get('gameId');
+const PLAYER_ID = params.get('playerId');
+const API = '';
+
+let gameState = null;
+let pollInterval = null;
+let myFlipped = false;
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+window.onload = () => {
+  if(!GAME_ID || !PLAYER_ID) {
+    window.location.href = '/';
+    return;
+  }
+  document.getElementById('headerCode').textContent = GAME_ID;
+  document.getElementById('shareCode').textContent = GAME_ID;
+  const link = `${window.location.origin}/?join=${GAME_ID}`;
+  document.getElementById('shareLink').textContent = link;
+  startPolling();
+};
+
+function startPolling() {
+  pollInterval = setInterval(fetchState, 500);
+  fetchState();
+}
+
+async function fetchState() {
+  try {
+    const res = await fetch(`${API}/api/state?gameId=${GAME_ID}&playerId=${PLAYER_ID}`);
+    const data = await res.json();
+    if(data.error) return;
+    updateUI(data);
+  } catch(e) {}
+}
+
+// ── UPDATE UI ─────────────────────────────────────────────────────────────────
+function updateUI(state) {
+  gameState = state;
+
+  // Waiting overlay
+  if(state.waiting) {
+    document.getElementById('waitingOverlay').style.display = 'flex';
+    return;
+  }
+  document.getElementById('waitingOverlay').style.display = 'none';
+
+  // Win overlay
+  if(state.state === 'finished') {
+    clearInterval(pollInterval);
+    const won = state.winner === PLAYER_ID;
+    document.getElementById('winTitle').textContent = won ? '🏁 You Win!' : 'Race Over';
+    document.getElementById('winSub').textContent = won
+      ? 'Congratulations — you crossed the finish line first!'
+      : 'Your opponent reached the final stop first.';
+    document.getElementById('winTitle').style.color = won ? 'var(--gold-light)' : 'var(--muted)';
+    document.getElementById('winOverlay').style.display = 'flex';
+    return;
+  }
+
+  // Player info
+  document.getElementById('myWeapon').textContent = state.myWeapon || '—';
+  document.getElementById('oppWeapon').textContent = state.oppWeapon || '—';
+
+  // Deck count
+  document.getElementById('myDeckCount').textContent = `${state.myDeckCount} cards in deck`;
+
+  // Flip button — enable when it's time to flip
+  const canFlip = !myFlipped && state.state === 'playing' && !state.myFlipped && !state.suddenDeath;
+  document.getElementById('flipBtn').disabled = !canFlip;
+  document.getElementById('flipBtn').style.cursor = canFlip ? 'pointer' : 'not-allowed';
+
+  // My card
+  if(state.myFlipped) {
+    document.getElementById('myCardDisplay').innerHTML = renderCard(state.myFlipped, true);
+    myFlipped = true;
+  } else if(!myFlipped) {
+    document.getElementById('myCardDisplay').innerHTML = `<div class="card face-down"></div>`;
+  }
+
+  // Opp card
+  if(state.oppFlipped) {
+    document.getElementById('oppCardDisplay').innerHTML = renderCard(state.oppFlipped, false);
+  } else if(state.state === 'playing') {
+    document.getElementById('oppCardDisplay').innerHTML = state.myFlipped
+      ? `<div class="card face-down" style="opacity:0.5"></div>`
+      : `<div class="card-placeholder">Waiting for flip</div>`;
+  }
+
+  // Results after both flipped — reset myFlipped so button re-enables
+  if(state.myFlipped && state.oppFlipped) {
+    showResults(state);
+    myFlipped = false;
+  }
+  
+  // If neither player has flipped this turn, reset myFlipped
+  if(!state.myFlipped && !state.oppFlipped && !state.suddenDeath) {
+    myFlipped = false;
+  }
+
+  // Sudden death
+  if(state.suddenDeath) {
+    document.getElementById('myResult').className = 'result-badge result-miss';
+    document.getElementById('myResult').textContent = 'SUDDEN DEATH — FLIP AGAIN';
+    document.getElementById('myResult').style.display = 'block';
+    document.getElementById('flipBtn').disabled = false;
+    myFlipped = false;
+  }
+
+  // Route board
+  renderBoard(state);
+
+  // Log
+  renderLog(state.log);
+}
+
+function showResults(state) {
+  if(!state.myFlipped || !state.oppFlipped) return;
+
+  const mySpd = state.myFlipped.speed;
+  const oppSpd = state.oppFlipped.speed;
+  const sameStop = state.myPosition === state.oppPosition;
+  const route = state.route;
+
+  const myRes = document.getElementById('myResult');
+  const oppRes = document.getElementById('oppResult');
+
+  if(sameStop) {
+    // Head-to-head
+    if(mySpd > oppSpd) {
+      myRes.className = 'result-badge result-advance'; myRes.textContent = 'WIN — ADVANCED';
+      oppRes.className = 'result-badge result-miss'; oppRes.textContent = 'LOST — STAYED';
+    } else if(oppSpd > mySpd) {
+      myRes.className = 'result-badge result-miss'; myRes.textContent = 'LOST — STAYED';
+      oppRes.className = 'result-badge result-advance'; oppRes.textContent = 'WIN — ADVANCED';
+    } else {
+      myRes.className = 'result-badge'; myRes.textContent = 'TIED';
+      myRes.style.background = 'rgba(200,155,32,0.15)'; myRes.style.color = 'var(--gold)';
+      oppRes.style.display = 'none';
+    }
+  } else {
+    // Independent thresholds
+    const pos = PLAYER_ID === 'p1' ? 'p1' : 'p2';
+    // Just show advance/miss based on position change
+    myRes.className = 'result-badge result-advance'; myRes.textContent = '▲ ADVANCED';
+    oppRes.style.display = 'none';
+  }
+
+  myRes.style.display = 'block';
+  oppRes.style.display = 'block';
+}
+
+function renderCard(card, isMe) {
+  if(!card) return '';
+  const bandClass = `band-${card.band}`;
+  const wcBadge = card.isWildcard ? `<div class="card-wildcard-badge">★ Wildcard</div>` : '';
+  return `
+  <div class="card" style="border-color:${isMe ? 'var(--gold)' : 'rgba(100,150,220,0.5)'}">
+    <div class="card-scene ${bandClass}"></div>
+    ${wcBadge}
+    <div class="card-content">
+      <div class="card-state-row">
+        <div>
+          <div class="card-state-name">${card.name}</div>
+          <div style="font-family:'Barlow Condensed';font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.4);text-transform:uppercase">${card.tier}</div>
+        </div>
+        <div>
+          <div class="card-mph">${card.speed}</div>
+          <div class="card-mph-unit">MPH</div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-tier">${card.band} mph band</div>
+        <div class="card-weapon-badge wb-${card.weapon}">${card.weapon}</div>
+      </div>
+    </div>
+    <div class="card-ft">FULL THROTTLE</div>
+  </div>`;
+}
+
+let lastMyPosition = -1;
+
+function renderBoard(state) {
+  const route = state.route;
+  if(!route) return;
+
+  document.getElementById('routeId').textContent = route.id;
+  document.getElementById('routeName').textContent = route.name || '';
+
+  const half = Math.ceil(route.states.length / 2);
+  const track = document.getElementById('stopTrack');
+  track.innerHTML = route.states.map((abbr, i) => {
+    const thresh = route.thresholds[i];
+    const isMyStop = state.myPosition === i;
+    const isOppStop = state.oppPosition === i;
+    const isPassed = state.myPosition > i;
+    const isHalf = i + 1 === half;
+
+    let cls = 'stop-row';
+    if(isHalf) cls += ' halfway';
+    if(isMyStop && isOppStop) cls += ' active-both';
+    else if(isMyStop) cls += ' active-mine';
+    else if(isOppStop) cls += ' active-opp';
+    else if(isPassed) cls += ' passed-mine';
+
+    const markers = [];
+    if(isMyStop) markers.push(`<div class="marker marker-mine" title="You"></div>`);
+    if(isOppStop) markers.push(`<div class="marker marker-opp" title="Opponent"></div>`);
+
+    return `
+    <div class="${cls}">
+      <div class="stop-num">${i+1}</div>
+      <div class="stop-state">
+        <div class="stop-state-name">${STATE_NAMES[abbr]}</div>
+        <div class="stop-state-abbr">${abbr}</div>
+      </div>
+      <div class="stop-thresh">${thresh}<span>mph</span></div>
+      <div class="stop-markers">${markers.join('')}</div>
+    </div>`;
+  }).join('');
+
+  // Only scroll when position changes
+  if(state.myPosition !== lastMyPosition) {
+    lastMyPosition = state.myPosition;
+    setTimeout(() => {
+      const activeEl = track.querySelector('.active-mine, .active-both');
+      if(activeEl) activeEl.scrollIntoView({block:'nearest', behavior:'smooth'});
+    }, 100);
+  }
+}
+
+const STATE_NAMES = {
+  CA:"California",TX:"Texas",FL:"Florida",NY:"New York",PA:"Pennsylvania",
+  IL:"Illinois",OH:"Ohio",GA:"Georgia",NC:"North Carolina",MI:"Michigan",
+  NJ:"New Jersey",VA:"Virginia",WA:"Washington",AZ:"Arizona",TN:"Tennessee",
+  MA:"Massachusetts",IN:"Indiana",MO:"Missouri",MD:"Maryland",WI:"Wisconsin",
+  CO:"Colorado",MN:"Minnesota",SC:"South Carolina",AL:"Alabama",LA:"Louisiana",
+  KY:"Kentucky",OR:"Oregon",OK:"Oklahoma",CT:"Connecticut",UT:"Utah",
+  IA:"Iowa",NV:"Nevada",AR:"Arkansas",KS:"Kansas",MS:"Mississippi",
+  NM:"New Mexico",NE:"Nebraska",ID:"Idaho",WV:"West Virginia",HI:"Hawaii",
+  NH:"New Hampshire",ME:"Maine",MT:"Montana",RI:"Rhode Island",DE:"Delaware",
+  SD:"South Dakota",ND:"North Dakota",AK:"Alaska",VT:"Vermont",WY:"Wyoming"
+};
+
+function renderLog(log) {
+  if(!log || !log.length) return;
+  const bar = document.getElementById('statusBar');
+  bar.innerHTML = [...log].reverse().map((msg, i) =>
+    `<span class="status-msg ${i===0?'latest':''}">${i > 0 ? '·' : ''} ${msg}</span>`
+  ).join('');
+}
+
+async function flipCard() {
+  document.getElementById('flipBtn').disabled = true;
+  document.getElementById('myResult').style.display = 'none';
+  document.getElementById('oppResult').style.display = 'none';
+  myFlipped = true;
+
+  try {
+    const res = await fetch(`${API}/api/flip`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({gameId: GAME_ID, playerId: PLAYER_ID})
+    });
+    const data = await res.json();
+    if(data.error) { myFlipped = false; return; }
+    updateUI(data);
+  } catch(e) {
+    myFlipped = false;
+    document.getElementById('flipBtn').disabled = false;
+  }
+}
+
+function copyCode() {
+  navigator.clipboard.writeText(GAME_ID).then(() => {
+    document.getElementById('copyHint').textContent = '✓ Copied!';
+    setTimeout(() => { document.getElementById('copyHint').textContent = 'Click to copy code'; }, 2000);
+  });
+}
+
+function copyLink() {
+  const link = `${window.location.origin}/?join=${GAME_ID}`;
+  navigator.clipboard.writeText(link).then(() => {
+    document.getElementById('linkHint').textContent = '✓ Link copied!';
+    setTimeout(() => { document.getElementById('linkHint').textContent = 'Click to copy full link'; }, 2000);
+  });
+}
+</script>
+</body>
+</html>
