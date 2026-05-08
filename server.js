@@ -3,6 +3,11 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
+// Resolve the directory where server.js lives
+const ROOT_DIR = path.dirname(require.resolve('./package.json'));
+console.log('Server root directory:', ROOT_DIR);
+console.log('Files in root:', fs.readdirSync(ROOT_DIR).join(', '));
+
 // ── GAME STATE STORE ──────────────────────────────────────────────────────────
 const games = {};
 
@@ -162,12 +167,13 @@ function createGame(routeId, weapon1) {
   return games[id];
 }
 
-function joinGame(gameId, weapon2) {
+function joinGame(gameId) {
   const game = games[gameId];
   if(!game || game.players.p2) return null;
+  const weapon = game.players.p1.weapon;
   game.players.p2 = {
-    name:"Player 2", weapon: weapon2,
-    deck: buildDeck(game.routeId, weapon2),
+    name:"Player 2", weapon: weapon,
+    deck: buildDeck(game.routeId, weapon),
     position: 0, discard: [], ready: false
   };
   game.state = "playing";
@@ -278,11 +284,11 @@ const server = http.createServer((req, res) => {
   
   // Serve static files
   if(pathname === '/' || pathname === '/index.html') {
-    serveFile(res, path.join(__dirname, 'index.html'), 'text/html');
+    serveFile(res, path.join(ROOT_DIR, 'index.html'), 'text/html');
     return;
   }
   if(pathname === '/game.html') {
-    serveFile(res, path.join(__dirname, 'game.html'), 'text/html');
+    serveFile(res, path.join(ROOT_DIR, 'game.html'), 'text/html');
     return;
   }
   
@@ -313,8 +319,8 @@ const server = http.createServer((req, res) => {
   
   if(pathname === '/api/join' && req.method === 'POST') {
     body(req, data => {
-      const {gameId, weapon} = data;
-      const game = joinGame(gameId, weapon);
+      const {gameId} = data;
+      const game = joinGame(gameId);
       if(!game) { json(res, {error:"Game not found or full"}, 400); return; }
       json(res, {gameId: game.id, playerId: "p2"});
     });
@@ -368,11 +374,14 @@ function sanitizeGame(game, playerId) {
 
 function serveFile(res, filePath, mime) {
   try {
+    console.log('Serving file:', filePath);
     const data = fs.readFileSync(filePath);
     res.writeHead(200, {'Content-Type': mime});
     res.end(data);
   } catch(e) {
-    res.writeHead(404); res.end('Not found');
+    console.error('File not found:', filePath, e.message);
+    res.writeHead(404, {'Content-Type': 'text/html'});
+    res.end('<html><body><h1>Full Throttle Beta</h1><p>File not found: ' + filePath + '</p><p><a href="/">Go Home</a></p></body></html>');
   }
 }
 
