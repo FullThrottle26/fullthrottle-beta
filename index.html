@@ -4,803 +4,396 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Full Throttle Beta</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --gold: #C89B20;
-  --gold-light: #E8BC40;
-  --dark: #0A0E18;
-  --darker: #050810;
-  --mid: #141928;
-  --surface: #1A2035;
-  --border: rgba(200,155,32,0.2);
-  --text: #F0EDE6;
-  --muted: rgba(240,237,230,0.5);
-  --red: #C84020;
+:root{
+  --gold:#C89B20;--gold-l:#E8BC40;--dark:#0A0E18;--mid:#141928;
+  --surface:#1A2035;--border:rgba(200,155,32,0.2);--text:#F0EDE6;
+  --muted:rgba(240,237,230,0.5);--sky1:#87CEEB;--sky2:#4A90D9;
+  --asphalt:#2C2C2C;--line:#F5E642;--grass:#4A7C3F;
 }
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  background: var(--darker);
-  color: var(--text);
-  font-family: 'Barlow', sans-serif;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',sans-serif;color:var(--text);overflow-x:hidden;background:#0A0E18}
 
 /* ── HERO ── */
-.hero {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  padding: 60px 24px;
-  text-align: center;
-  overflow: hidden;
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  position:relative;padding:60px 24px;text-align:center;overflow:hidden;
 }
 
-.road-bg {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(180deg, var(--darker) 0%, rgba(10,14,24,0.4) 40%, rgba(10,14,24,0.8) 80%, var(--darker) 100%),
-    repeating-linear-gradient(
-      180deg,
-      transparent 0px,
-      transparent 60px,
-      rgba(200,155,32,0.06) 60px,
-      rgba(200,155,32,0.06) 62px
-    );
-  pointer-events: none;
+/* Sky gradient background */
+.sky{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,#0a1628 0%,#1a3a6b 35%,#c97420 65%,#e85820 80%,#2C2C2C 100%);
 }
 
-.road-lines {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(180deg,
-      transparent 0%, transparent 20%,
-      rgba(200,155,32,0.03) 20%, rgba(200,155,32,0.03) 20.1%,
-      transparent 20.1%, transparent 100%
-    );
-  pointer-events: none;
+/* Sun */
+.sun{
+  position:absolute;left:50%;top:52%;transform:translateX(-50%);
+  width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle,#FFE066 30%,#FF9500 70%,#FF5500 100%);
+  box-shadow:0 0 60px 20px rgba(255,150,0,0.4);
 }
 
-/* Animated dashes */
-.dash-container {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
+/* Mountains */
+.mountains{
+  position:absolute;bottom:30%;left:0;right:0;
+  height:200px;overflow:hidden;
 }
-.dash {
-  position: absolute;
-  left: 50%;
-  width: 3px;
-  height: 40px;
-  background: linear-gradient(180deg, transparent, var(--gold), transparent);
-  opacity: 0.4;
-  animation: dashMove 1.2s linear infinite;
-  transform: translateX(-50%);
-}
-.dash:nth-child(1){ top: -40px; animation-delay: 0s; }
-.dash:nth-child(2){ top: -40px; animation-delay: 0.3s; }
-.dash:nth-child(3){ top: -40px; animation-delay: 0.6s; }
-.dash:nth-child(4){ top: -40px; animation-delay: 0.9s; }
-@keyframes dashMove {
-  0%   { transform: translateX(-50%) translateY(0); opacity: 0; }
-  10%  { opacity: 0.4; }
-  90%  { opacity: 0.4; }
-  100% { transform: translateX(-50%) translateY(110vh); opacity: 0; }
+.mountain{
+  position:absolute;bottom:0;
+  border-left:solid transparent;
+  border-right:solid transparent;
+  border-bottom:solid;
 }
 
-.beta-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 16px;
-  border: 1px solid var(--gold);
-  border-radius: 20px;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 3px;
-  color: var(--gold);
-  text-transform: uppercase;
-  margin-bottom: 32px;
-  position: relative;
+/* Road */
+.road-wrap{
+  position:absolute;bottom:0;left:0;right:0;height:32%;overflow:hidden;
 }
-.beta-dot {
-  width: 6px; height: 6px;
-  background: var(--gold);
-  border-radius: 50%;
-  animation: pulse 2s ease-in-out infinite;
+.road{
+  position:absolute;bottom:0;left:50%;
+  transform:translateX(-50%);
+  width:0;
+  border-left:200px solid transparent;
+  border-right:200px solid transparent;
+  border-bottom:400px solid #1a1a1a;
 }
-@keyframes pulse {
-  0%,100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.8); }
+.road-surface{
+  position:absolute;bottom:0;left:0;right:0;height:100%;
+  background:linear-gradient(180deg,#111 0%,#222 100%);
+}
+.road-line{
+  position:absolute;left:50%;transform:translateX(-50%);
+  width:8px;background:#F5E642;border-radius:4px;
+  animation:roadMove 0.8s linear infinite;
+}
+@keyframes roadMove{
+  0%{opacity:0;transform:translateX(-50%) translateY(-100%)}
+  10%{opacity:1}
+  90%{opacity:1}
+  100%{opacity:0;transform:translateX(-50%) translateY(300px)}
+}
+.shoulder{
+  position:absolute;bottom:0;height:100%;width:12px;
+  background:#F5E642;opacity:0.8;
+}
+.shoulder.left{left:calc(50% - 140px)}
+.shoulder.right{right:calc(50% - 140px)}
+
+/* Grass */
+.grass{
+  position:absolute;bottom:0;left:0;right:0;height:32%;
+  background:linear-gradient(180deg,#3a6030 0%,#2a4a22 100%);
+  z-index:0;
 }
 
-h1 {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(72px, 15vw, 160px);
-  line-height: 0.85;
-  letter-spacing: 4px;
-  color: var(--text);
-  position: relative;
-  margin-bottom: 8px;
+/* Hero content */
+.hero-content{position:relative;z-index:10}
+.beta-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 16px;border:1px solid var(--gold);border-radius:20px;
+  font-family:'Barlow Condensed',sans-serif;font-size:11px;
+  font-weight:600;letter-spacing:3px;color:var(--gold);
+  text-transform:uppercase;margin-bottom:24px;
+  background:rgba(10,14,24,0.6);backdrop-filter:blur(4px);
 }
-h1 span {
-  display: block;
-  background: linear-gradient(135deg, var(--gold-light), var(--gold), #A07818);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.beta-dot{width:6px;height:6px;background:var(--gold);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.8)}}
+
+h1{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(72px,15vw,160px);line-height:0.85;
+  letter-spacing:4px;color:#fff;
+  text-shadow:0 4px 30px rgba(0,0,0,0.8);margin-bottom:8px;
+}
+h1 span{color:var(--gold-l)}
+
+.tagline{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:clamp(14px,3vw,20px);font-weight:300;
+  letter-spacing:6px;text-transform:uppercase;
+  color:rgba(255,255,255,0.8);margin-bottom:16px;
+}
+.sub-tagline{
+  font-size:16px;color:rgba(255,255,255,0.65);
+  max-width:460px;line-height:1.6;margin:0 auto 48px;
 }
 
-.tagline {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: clamp(14px, 3vw, 22px);
-  font-weight: 300;
-  letter-spacing: 6px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 16px;
+/* Stats */
+.stats-bar{
+  display:flex;gap:0;border:1px solid rgba(200,155,32,0.3);
+  background:rgba(10,14,24,0.7);backdrop-filter:blur(8px);
+  margin-bottom:48px;
 }
+.stat-item{flex:1;text-align:center;padding:16px 20px;border-right:1px solid rgba(200,155,32,0.2)}
+.stat-item:last-child{border-right:none}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--gold);display:block;line-height:1}
+.stat-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-top:4px;display:block}
 
-.sub-tagline {
-  font-size: 16px;
-  color: var(--muted);
-  max-width: 480px;
-  line-height: 1.6;
-  margin: 0 auto 56px;
+/* CTA */
+.cta-group{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.btn-primary{
+  padding:16px 40px;
+  background:linear-gradient(135deg,var(--gold-l),var(--gold));
+  color:#0A0E18;font-family:'Bebas Neue',sans-serif;
+  font-size:22px;letter-spacing:3px;border:none;cursor:pointer;
+  text-decoration:none;display:inline-flex;align-items:center;gap:10px;
+  transition:transform 0.15s,box-shadow 0.15s;
+  clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
 }
-
-.cta-group {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-bottom: 80px;
-  position: relative;
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(200,155,32,0.4)}
+.btn-secondary{
+  padding:16px 40px;background:rgba(10,14,24,0.6);
+  backdrop-filter:blur(4px);color:var(--gold);
+  font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;
+  border:1px solid var(--gold);cursor:pointer;text-decoration:none;
+  display:inline-flex;align-items:center;gap:10px;
+  transition:all 0.15s;
+  clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
 }
-
-.btn-primary {
-  padding: 16px 40px;
-  background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  color: var(--darker);
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  border: none;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  transition: transform 0.15s, box-shadow 0.15s;
-  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
-}
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(200,155,32,0.4);
-}
-
-.btn-secondary {
-  padding: 16px 40px;
-  background: transparent;
-  color: var(--gold);
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  border: 1px solid var(--gold);
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  transition: all 0.15s;
-  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
-}
-.btn-secondary:hover {
-  background: rgba(200,155,32,0.1);
-  transform: translateY(-2px);
-}
-
-/* ── STATS BAR ── */
-.stats-bar {
-  display: flex;
-  gap: 0;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 20px 0;
-  width: 100%;
-  max-width: 700px;
-  position: relative;
-}
-.stat-item {
-  flex: 1;
-  text-align: center;
-  padding: 0 20px;
-  border-right: 1px solid var(--border);
-}
-.stat-item:last-child { border-right: none; }
-.stat-num {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 36px;
-  color: var(--gold);
-  display: block;
-  line-height: 1;
-}
-.stat-label {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 11px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-top: 4px;
-  display: block;
-}
+.btn-secondary:hover{background:rgba(200,155,32,0.1);transform:translateY(-2px)}
 
 /* ── SECTIONS ── */
-.section {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 80px 24px;
+.section{max-width:1100px;margin:0 auto;padding:80px 24px}
+.section-label{
+  font-family:'Barlow Condensed',sans-serif;font-size:11px;
+  letter-spacing:4px;text-transform:uppercase;color:var(--gold);
+  margin-bottom:16px;display:flex;align-items:center;gap:12px;
 }
-
-.section-label {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 11px;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.section-label::before{content:'';display:block;width:30px;height:1px;background:var(--gold)}
+.section-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(36px,6vw,64px);letter-spacing:2px;line-height:0.9;margin-bottom:24px;
 }
-.section-label::before {
-  content: '';
-  display: block;
-  width: 30px;
-  height: 1px;
-  background: var(--gold);
-}
-
-.section-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(36px, 6vw, 64px);
-  letter-spacing: 2px;
-  line-height: 0.9;
-  margin-bottom: 24px;
-}
-
-.section-body {
-  font-size: 17px;
-  line-height: 1.7;
-  color: rgba(240,237,230,0.75);
-  max-width: 560px;
-}
+.section-body{font-size:17px;line-height:1.7;color:rgba(240,237,230,0.75);max-width:560px}
 
 /* ── HOW TO PLAY ── */
-.how-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  margin-top: 48px;
-}
-
-.how-card {
-  background: var(--surface);
-  padding: 36px 32px;
-  transition: background 0.2s;
-}
-.how-card:hover { background: var(--mid); }
-
-.how-num {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 64px;
-  color: rgba(200,155,32,0.15);
-  line-height: 1;
-  margin-bottom: 8px;
-}
-.how-title {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-  color: var(--gold-light);
-}
-.how-text {
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--muted);
-}
+.how-bg{background:var(--mid)}
+.how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;background:rgba(200,155,32,0.15);border:1px solid rgba(200,155,32,0.15);margin-top:48px}
+.how-card{background:var(--surface);padding:32px 28px;transition:background 0.2s}
+.how-card:hover{background:#1e2540}
+.how-num{font-family:'Bebas Neue',sans-serif;font-size:56px;color:rgba(200,155,32,0.15);line-height:1;margin-bottom:6px}
+.how-title{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;color:var(--gold-l)}
+.how-text{font-size:13px;line-height:1.6;color:var(--muted)}
 
 /* ── ROUTES ── */
-.routes-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 12px;
-  margin-top: 40px;
+.routes-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-top:40px}
+.route-card{
+  border:1px solid rgba(200,155,32,0.15);padding:24px;
+  background:var(--surface);position:relative;overflow:hidden;
+  transition:border-color 0.2s,transform 0.15s;
 }
-.route-card {
-  border: 1px solid var(--border);
-  padding: 24px;
-  background: var(--surface);
-  position: relative;
-  overflow: hidden;
-  transition: border-color 0.2s, transform 0.15s;
+.route-card:hover{border-color:var(--gold);transform:translateY(-2px)}
+.route-card::before{
+  content:'';position:absolute;top:0;left:0;width:3px;height:100%;
+  background:linear-gradient(180deg,var(--gold),transparent);
 }
-.route-card:hover { border-color: var(--gold); transform: translateY(-2px); }
-.route-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0;
-  width: 3px; height: 100%;
-  background: linear-gradient(180deg, var(--gold), transparent);
-}
-.route-id {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 32px;
-  color: var(--gold);
-  line-height: 1;
-}
-.route-name {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 13px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 12px;
-}
-.route-dir {
-  font-size: 14px;
-  color: var(--text);
-  margin-bottom: 12px;
-}
-.route-meta {
-  display: flex;
-  gap: 16px;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 12px;
-  letter-spacing: 1px;
-  color: var(--muted);
-  text-transform: uppercase;
-}
+.route-id{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold);line-height:1}
+.route-name{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.route-dir{font-size:14px;color:var(--text);margin-bottom:12px}
+.route-meta{display:flex;gap:16px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;color:var(--muted);text-transform:uppercase}
 
-/* ── SPEED SYSTEM ── */
-.speed-section {
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
+/* ── SPEED SECTION ── */
+.speed-bg{background:linear-gradient(180deg,var(--mid) 0%,#0d1020 100%);border-top:1px solid rgba(200,155,32,0.15);border-bottom:1px solid rgba(200,155,32,0.15)}
+.weapon-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(200,155,32,0.15);margin-top:40px}
+@media(max-width:600px){.weapon-grid{grid-template-columns:repeat(2,1fr)}}
+.weapon-item{background:var(--surface);padding:24px;text-align:center;transition:background 0.2s}
+.weapon-item:hover{background:#1e2540}
+.weapon-name{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:4px}
+.weapon-bonus{font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.weapon-tiers{font-size:11px;color:rgba(200,155,32,0.5);margin-top:6px;letter-spacing:1px}
 
-.weapon-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  background: var(--border);
-  margin-top: 40px;
+/* ── PLAY SECTION ── */
+.play-bg{
+  background:linear-gradient(135deg,#0d1020 0%,#141928 100%);
+  border-top:1px solid rgba(200,155,32,0.15);
+  text-align:center;padding:100px 24px;
 }
-@media(max-width:600px){ .weapon-grid { grid-template-columns: repeat(2,1fr); } }
-
-.weapon-item {
-  background: var(--surface);
-  padding: 24px;
-  text-align: center;
+.game-form{max-width:480px;margin:48px auto 0;display:flex;flex-direction:column;gap:16px}
+.form-group{display:flex;flex-direction:column;gap:8px;text-align:left}
+.form-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gold)}
+select,input{
+  background:#0d1020;border:1px solid rgba(200,155,32,0.25);
+  color:var(--text);padding:12px 16px;font-family:'Barlow',sans-serif;
+  font-size:14px;width:100%;appearance:none;-webkit-appearance:none;cursor:pointer;
+  outline:none;transition:border-color 0.2s;
 }
-.weapon-name {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 28px;
-  letter-spacing: 2px;
-  margin-bottom: 4px;
+select:focus,input:focus{border-color:var(--gold)}
+select option{background:#0d1020}
+.divider{
+  display:flex;align-items:center;gap:16px;margin:8px 0;
+  color:var(--muted);font-family:'Barlow Condensed',sans-serif;
+  font-size:12px;letter-spacing:2px;text-transform:uppercase;
 }
-.weapon-bonus {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 13px;
-  color: var(--muted);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-.weapon-tiers {
-  font-size: 11px;
-  color: rgba(200,155,32,0.6);
-  margin-top: 6px;
-  letter-spacing: 1px;
-}
-
-/* ── PLAY NOW SECTION ── */
-.play-section {
-  background: linear-gradient(135deg, var(--mid) 0%, var(--surface) 100%);
-  border-top: 1px solid var(--border);
-  text-align: center;
-  padding: 100px 24px;
-}
-
-.game-form {
-  max-width: 480px;
-  margin: 48px auto 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  text-align: left;
-}
-.form-label {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 11px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--gold);
-}
-select, input {
-  background: var(--dark);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 12px 16px;
-  font-family: 'Barlow', sans-serif;
-  font-size: 14px;
-  width: 100%;
-  appearance: none;
-  -webkit-appearance: none;
-  cursor: pointer;
-  outline: none;
-  transition: border-color 0.2s;
-}
-select:focus, input:focus { border-color: var(--gold); }
-select option { background: var(--dark); }
-
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin: 8px 0;
-  color: var(--muted);
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 12px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
-.divider::before, .divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-
-.join-form {
-  max-width: 480px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.error-msg {
-  color: var(--red);
-  font-size: 13px;
-  font-family: 'Barlow Condensed', sans-serif;
-  letter-spacing: 1px;
-  display: none;
-}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(200,155,32,0.15)}
+.join-form{max-width:480px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.error-msg{color:#E85820;font-size:13px;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;display:none}
 
 /* ── FOOTER ── */
-footer {
-  border-top: 1px solid var(--border);
-  padding: 32px 24px;
-  text-align: center;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 12px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-footer span { color: var(--gold); }
+footer{border-top:1px solid rgba(200,155,32,0.15);padding:32px 24px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);background:#050810}
+footer span{color:var(--gold)}
 </style>
 </head>
 <body>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="road-bg"></div>
-  <div class="dash-container">
-    <div class="dash"></div><div class="dash"></div>
-    <div class="dash"></div><div class="dash"></div>
+  <div class="sky"></div>
+  <div class="sun"></div>
+
+  <!-- Mountains -->
+  <div class="mountains">
+    <div class="mountain" style="left:5%;border-left-width:120px;border-right-width:80px;border-bottom-width:160px;border-bottom-color:#1a2a3a;opacity:0.9"></div>
+    <div class="mountain" style="left:15%;border-left-width:80px;border-right-width:100px;border-bottom-width:130px;border-bottom-color:#1e3040;opacity:0.8"></div>
+    <div class="mountain" style="left:60%;border-left-width:100px;border-right-width:140px;border-bottom-width:180px;border-bottom-color:#162030;opacity:0.95"></div>
+    <div class="mountain" style="left:72%;border-left-width:70px;border-right-width:90px;border-bottom-width:140px;border-bottom-color:#1a2838;opacity:0.85"></div>
+    <div class="mountain" style="right:5%;border-left-width:90px;border-right-width:60px;border-bottom-width:150px;border-bottom-color:#141e2c;opacity:0.9"></div>
   </div>
 
-  <div class="beta-pill"><div class="beta-dot"></div>Beta Access</div>
-
-  <h1>Full<span>Throttle</span></h1>
-  <p class="tagline">The US Interstate License Plate Card Game</p>
-  <p class="sub-tagline">Race America's highways. Collect all 50 states. Build your deck. Higher MPH wins.</p>
-
-  <div class="cta-group">
-    <a href="#play" class="btn-primary">▶ &nbsp;Play Now</a>
-    <a href="#how-to-play" class="btn-secondary">How to Play</a>
+  <!-- Road -->
+  <div class="grass"></div>
+  <div class="road-wrap">
+    <div class="road-surface"></div>
+    <div class="shoulder left"></div>
+    <div class="shoulder right"></div>
+    <div class="road-line" style="height:60px;top:0;animation-delay:0s"></div>
+    <div class="road-line" style="height:60px;top:0;animation-delay:0.27s"></div>
+    <div class="road-line" style="height:60px;top:0;animation-delay:0.54s"></div>
   </div>
 
-  <div class="stats-bar">
-    <div class="stat-item">
-      <span class="stat-num">50</span>
-      <span class="stat-label">States</span>
+  <div class="hero-content">
+    <div class="beta-pill"><div class="beta-dot"></div>Beta Access</div>
+    <h1>Full<br><span>Throttle</span></h1>
+    <p class="tagline">The US Interstate License Plate Card Game</p>
+    <p class="sub-tagline">Race America's highways. Collect all 50 states. Build your deck. Higher MPH wins.</p>
+
+    <div class="stats-bar">
+      <div class="stat-item"><span class="stat-num">50</span><span class="stat-label">States</span></div>
+      <div class="stat-item"><span class="stat-num">1,500</span><span class="stat-label">Cards</span></div>
+      <div class="stat-item"><span class="stat-num">6</span><span class="stat-label">Routes</span></div>
+      <div class="stat-item"><span class="stat-num">3</span><span class="stat-label">Levels</span></div>
     </div>
-    <div class="stat-item">
-      <span class="stat-num">1,500</span>
-      <span class="stat-label">Cards</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-num">6</span>
-      <span class="stat-label">Routes</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-num">3</span>
-      <span class="stat-label">Levels</span>
+
+    <div class="cta-group">
+      <a href="#play" class="btn-primary">▶ &nbsp;Play Now</a>
+      <a href="#how-to-play" class="btn-secondary">How to Play</a>
     </div>
   </div>
 </section>
 
 <!-- HOW TO PLAY -->
-<section class="section" id="how-to-play">
-  <div class="section-label">How it works</div>
-  <h2 class="section-title">Race the<br>Interstate</h2>
-  <p class="section-body">Build a deck from states along your chosen route. Flip cards simultaneously. Higher MPH clears each stop. First player past the final stop wins.</p>
-
-  <div class="how-grid">
-    <div class="how-card">
-      <div class="how-num">01</div>
-      <div class="how-title">Choose Your Route</div>
-      <div class="how-text">Pick an interstate — I-90, I-95, I-80, I-10, I-40, or I-70. Each route has a unique set of states and escalating thresholds from start to finish.</div>
-    </div>
-    <div class="how-card">
-      <div class="how-num">02</div>
-      <div class="how-title">Build Your Deck</div>
-      <div class="how-text">Declare a weapon type — Cruise, Turbo, Nitro, Ghost, and more. Your deck is built from 2 cards per state on your route, all the same weapon.</div>
-    </div>
-    <div class="how-card">
-      <div class="how-num">03</div>
-      <div class="how-title">Flip &amp; Race</div>
-      <div class="how-text">Both players flip simultaneously. Beat the stop threshold to advance. When you're at the same stop, it's head-to-head — higher MPH wins.</div>
-    </div>
-    <div class="how-card">
-      <div class="how-num">04</div>
-      <div class="how-title">Sudden Death</div>
-      <div class="how-text">Tied on MPH in a head-to-head? Both players flip again immediately. Highest MPH takes the stop. Repeat until resolved.</div>
-    </div>
-    <div class="how-card">
-      <div class="how-num">05</div>
-      <div class="how-title">Wildcard States</div>
-      <div class="how-text">Alaska, Hawaii, and North Dakota are universal wildcards — playable at any stop on any route. Essential for clearing the toughest final stops.</div>
-    </div>
-    <div class="how-card">
-      <div class="how-num">06</div>
-      <div class="how-title">Win the Race</div>
-      <div class="how-text">First player to advance past the final stop wins. Your deck recycles automatically — the race never ends from running out of cards.</div>
+<section class="how-bg">
+  <div class="section" id="how-to-play">
+    <div class="section-label">How it works</div>
+    <h2 class="section-title">Race the<br>Interstate</h2>
+    <p class="section-body">Build a deck from states along your chosen route. Flip cards simultaneously. Higher MPH clears each stop. First player past the final stop wins.</p>
+    <div class="how-grid">
+      <div class="how-card"><div class="how-num">01</div><div class="how-title">Choose Your Route</div><div class="how-text">Pick an interstate — I-90, I-95, I-80, I-10, I-40, or I-70. Each route has a unique set of states and escalating thresholds from start to finish.</div></div>
+      <div class="how-card"><div class="how-num">02</div><div class="how-title">Declare Your Weapon</div><div class="how-text">Choose a weapon type — Cruise, Turbo, Nitro, Ghost, and more. Your entire deck is built from that one weapon across all route states.</div></div>
+      <div class="how-card"><div class="how-num">03</div><div class="how-title">Flip &amp; Race</div><div class="how-text">Both players flip simultaneously. Beat the stop threshold to advance. When you're at the same stop, it's head-to-head — higher MPH wins.</div></div>
+      <div class="how-card"><div class="how-num">04</div><div class="how-title">Sudden Death</div><div class="how-text">Tied on MPH in a head-to-head? Both players flip again immediately. Highest MPH takes the stop. Repeat until resolved.</div></div>
+      <div class="how-card"><div class="how-num">05</div><div class="how-title">Wildcard States</div><div class="how-text">Alaska, Hawaii, and North Dakota are universal wildcards — playable at any stop on any route. Essential for clearing the toughest final stops.</div></div>
+      <div class="how-card"><div class="how-num">06</div><div class="how-title">Win the Race</div><div class="how-text">First player to advance past the final stop wins. Your deck recycles automatically — the race never ends from running out of cards.</div></div>
     </div>
   </div>
 </section>
 
 <!-- ROUTES -->
-<section class="section">
-  <div class="section-label">Release 1 Routes</div>
-  <h2 class="section-title">Six Roads<br>Across America</h2>
-
-  <div class="routes-grid" id="routesGrid">
-    <!-- populated by JS -->
+<section style="background:#0d1020">
+  <div class="section">
+    <div class="section-label">Release 1 Routes</div>
+    <h2 class="section-title">Six Roads<br>Across America</h2>
+    <div class="routes-grid" id="routesGrid"></div>
   </div>
 </section>
 
 <!-- SPEED SYSTEM -->
-<section class="speed-section">
+<section class="speed-bg">
   <div class="section">
     <div class="section-label">Speed System</div>
     <h2 class="section-title">Six Weapons.<br>One Formula.</h2>
-    <p class="section-body">Card Speed = State Band + Tier Bonus + Weapon Bonus. Less populous states have higher band speeds. Ghost cards are absolute outliers — every Ghost card beats every non-Ghost card in the game.</p>
-
+    <p class="section-body">Card Speed = State Band + Tier Bonus + Weapon Bonus. Less populous states run faster. Ghost cards dominate everything — every Ghost beats every non-Ghost, game-wide.</p>
     <div class="weapon-grid">
-      <div class="weapon-item">
-        <div class="weapon-name" style="color:#8BC4F8">Cruise</div>
-        <div class="weapon-bonus">+0 mph bonus</div>
-        <div class="weapon-tiers">All tiers</div>
-      </div>
-      <div class="weapon-item">
-        <div class="weapon-name" style="color:#A8D888">Accelerate</div>
-        <div class="weapon-bonus">+5 mph bonus</div>
-        <div class="weapon-tiers">All tiers</div>
-      </div>
-      <div class="weapon-item">
-        <div class="weapon-name" style="color:#F8D878">Overdrive</div>
-        <div class="weapon-bonus">+10 mph bonus</div>
-        <div class="weapon-tiers">All tiers</div>
-      </div>
-      <div class="weapon-item">
-        <div class="weapon-name" style="color:#F8A848">Turbo</div>
-        <div class="weapon-bonus">+15 mph bonus</div>
-        <div class="weapon-tiers">Idle and above</div>
-      </div>
-      <div class="weapon-item">
-        <div class="weapon-name" style="color:#F87848">Nitro</div>
-        <div class="weapon-bonus">+30/+40 mph</div>
-        <div class="weapon-tiers">Drive and above</div>
-      </div>
-      <div class="weapon-item" style="background:rgba(60,52,137,0.3);border:1px solid rgba(100,90,200,0.3)">
-        <div class="weapon-name" style="color:#C8B8FF">Ghost</div>
-        <div class="weapon-bonus">+95 mph bonus</div>
-        <div class="weapon-tiers">Max &amp; Flash only · Ultra rare</div>
-      </div>
+      <div class="weapon-item"><div class="weapon-name" style="color:#8BC4F8">Cruise</div><div class="weapon-bonus">+0 mph bonus</div><div class="weapon-tiers">All tiers</div></div>
+      <div class="weapon-item"><div class="weapon-name" style="color:#A8D888">Accelerate</div><div class="weapon-bonus">+5 mph bonus</div><div class="weapon-tiers">All tiers</div></div>
+      <div class="weapon-item"><div class="weapon-name" style="color:#F8D878">Overdrive</div><div class="weapon-bonus">+10 mph bonus</div><div class="weapon-tiers">All tiers</div></div>
+      <div class="weapon-item"><div class="weapon-name" style="color:#F8A848">Turbo</div><div class="weapon-bonus">+15 mph bonus</div><div class="weapon-tiers">Idle and above</div></div>
+      <div class="weapon-item"><div class="weapon-name" style="color:#F87848">Nitro</div><div class="weapon-bonus">+30/+40 mph</div><div class="weapon-tiers">Drive and above</div></div>
+      <div class="weapon-item" style="background:rgba(60,52,137,0.3)"><div class="weapon-name" style="color:#C8B8FF">Ghost</div><div class="weapon-bonus">+95 mph bonus</div><div class="weapon-tiers">Max &amp; Flash · Ultra rare</div></div>
     </div>
   </div>
 </section>
 
 <!-- PLAY NOW -->
-<section class="play-section" id="play">
-  <div class="section-label" style="justify-content:center">Beta — Level 1: Open Road</div>
-  <h2 class="section-title" style="font-size:clamp(40px,8vw,80px)">Play Now</h2>
-  <p style="color:var(--muted);font-size:16px;max-width:440px;margin:0 auto;line-height:1.6">
-    Create a game and share the link with your opponent. Pick your route and weapon, then race.
-  </p>
+<section class="play-bg" id="play">
+  <div class="section-label" style="justify-content:center">Beta · Level 1: Open Road</div>
+  <h2 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,8vw,80px);letter-spacing:3px">Play Now</h2>
+  <p style="color:var(--muted);font-size:16px;max-width:440px;margin:16px auto 0;line-height:1.6">Create a game and share the link with your opponent. Both players use the same weapon type.</p>
 
-  <!-- CREATE GAME -->
-  <div class="game-form" id="createForm">
-    <div class="form-group">
-      <label class="form-label">Choose Route</label>
-      <select id="routeSelect">
-        <option value="">Loading routes...</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Your Weapon</label>
-      <select id="weaponSelect">
-        <option value="">Loading weapons...</option>
-      </select>
-    </div>
+  <div class="game-form">
+    <div class="form-group"><label class="form-label">Choose Route</label><select id="routeSelect"><option value="">Loading routes...</option></select></div>
+    <div class="form-group"><label class="form-label">Declare Weapon</label><select id="weaponSelect"><option value="">Loading weapons...</option></select></div>
     <div class="error-msg" id="createError">Please select a route and weapon.</div>
-    <button class="btn-primary" onclick="createGame()" style="width:100%;justify-content:center">
-      Create Game &amp; Get Link
-    </button>
+    <button class="btn-primary" onclick="createGame()" style="width:100%;justify-content:center;font-size:20px">Create Game &amp; Get Link</button>
   </div>
 
   <div class="divider" style="max-width:480px;margin:24px auto">or join a game</div>
 
-  <!-- JOIN GAME -->
-  <div class="join-form" id="joinForm">
-    <div class="form-group">
-      <label class="form-label">Game Code</label>
-      <input type="text" id="gameCodeInput" placeholder="Enter 8-character code" maxlength="8" style="text-transform:uppercase;text-align:center;letter-spacing:4px;font-size:18px;font-family:'Bebas Neue',sans-serif">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Your Weapon</label>
-      <select id="joinWeaponSelect">
-        <option value="">Loading weapons...</option>
-      </select>
-    </div>
+  <div class="join-form">
+    <div class="form-group"><label class="form-label">Game Code</label><input type="text" id="gameCodeInput" placeholder="Enter 8-character code" maxlength="8" style="text-transform:uppercase;text-align:center;letter-spacing:4px;font-size:20px;font-family:'Bebas Neue',sans-serif"></div>
+    <p style="font-size:13px;color:var(--muted);text-align:center;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px">You will use the same weapon as the game creator</p>
     <div class="error-msg" id="joinError">Game not found. Check the code and try again.</div>
-    <button class="btn-secondary" onclick="joinGame()" style="width:100%;justify-content:center">
-      Join Game
-    </button>
+    <button class="btn-secondary" onclick="joinGame()" style="width:100%;justify-content:center;font-size:20px">Join Game</button>
   </div>
 </section>
 
-<footer>
-  <span>Full Throttle</span> &nbsp;·&nbsp; Beta Version 1.0 &nbsp;·&nbsp; Level 1: Open Road &nbsp;·&nbsp; All rights reserved
-</footer>
+<footer><span>Full Throttle</span> &nbsp;·&nbsp; Beta Version 1.0 &nbsp;·&nbsp; Level 1: Open Road &nbsp;·&nbsp; All rights reserved</footer>
 
 <script>
-const API = '';  // same origin
-
-async function loadOptions() {
-  try {
-    const [routesRes, weaponsRes] = await Promise.all([
-      fetch(`${API}/api/routes`),
-      fetch(`${API}/api/weapons`)
-    ]);
-    const routes = await routesRes.json();
-    const weapons = await weaponsRes.json();
-
-    // Routes grid
-    const grid = document.getElementById('routesGrid');
-    grid.innerHTML = routes.map(r => `
-      <div class="route-card">
-        <div class="route-id">${r.id}</div>
-        <div class="route-name">${r.name}</div>
-        <div class="route-dir">${r.dir}</div>
-        <div class="route-meta">
-          <span>${r.stops} stops</span>
-          <span>${r.deck} cards</span>
-        </div>
-      </div>
-    `).join('');
-
-    // Route selects
-    const routeSel = document.getElementById('routeSelect');
-    routeSel.innerHTML = '<option value="">— Select route —</option>' +
-      routes.map(r => `<option value="${r.id}">${r.id} — ${r.name} (${r.stops} stops)</option>`).join('');
-
-    // Weapon selects
-    const wpnHtml = '<option value="">— Select weapon —</option>' +
-      weapons.map(w => `<option value="${w}">${w}</option>`).join('');
-    document.getElementById('weaponSelect').innerHTML = wpnHtml;
-    document.getElementById('joinWeaponSelect').innerHTML = wpnHtml;
-
-    // Check for join code in URL
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get('join');
-    if(code) {
-      document.getElementById('gameCodeInput').value = code.toUpperCase();
-      document.querySelector('#play').scrollIntoView({behavior:'smooth'});
-    }
-  } catch(e) {
-    console.error('Failed to load options', e);
-  }
+const API='';
+async function loadOptions(){
+  try{
+    const[routesRes,weaponsRes]=await Promise.all([fetch(`${API}/api/routes`),fetch(`${API}/api/weapons`)]);
+    const routes=await routesRes.json();
+    const weapons=await weaponsRes.json();
+    const grid=document.getElementById('routesGrid');
+    grid.innerHTML=routes.map(r=>`<div class="route-card"><div class="route-id">${r.id}</div><div class="route-name">${r.name}</div><div class="route-dir">${r.dir}</div><div class="route-meta"><span>${r.stops} stops</span><span>${r.deck} cards</span></div></div>`).join('');
+    const rSel=document.getElementById('routeSelect');
+    rSel.innerHTML='<option value="">— Select route —</option>'+routes.map(r=>`<option value="${r.id}">${r.id} — ${r.name} (${r.stops} stops)</option>`).join('');
+    const wHtml='<option value="">— Select weapon —</option>'+weapons.map(w=>`<option value="${w}">${w}</option>`).join('');
+    document.getElementById('weaponSelect').innerHTML=wHtml;
+    const params=new URLSearchParams(window.location.search);
+    const code=params.get('join');
+    if(code){document.getElementById('gameCodeInput').value=code.toUpperCase();document.querySelector('#play').scrollIntoView({behavior:'smooth'})}
+  }catch(e){console.error('Failed to load options',e)}
 }
-
-async function createGame() {
-  const routeId = document.getElementById('routeSelect').value;
-  const weapon = document.getElementById('weaponSelect').value;
-  const err = document.getElementById('createError');
-  
-  if(!routeId || !weapon) { err.style.display = 'block'; return; }
-  err.style.display = 'none';
-  
-  try {
-    const res = await fetch(`${API}/api/create`, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({routeId, weapon})
-    });
-    const data = await res.json();
-    if(data.error) { err.textContent = data.error; err.style.display = 'block'; return; }
-    
-    // Redirect to game
-    window.location.href = `/game.html?gameId=${data.gameId}&playerId=p1`;
-  } catch(e) {
-    err.textContent = 'Could not create game. Is the server running?';
-    err.style.display = 'block';
-  }
+async function createGame(){
+  const routeId=document.getElementById('routeSelect').value;
+  const weapon=document.getElementById('weaponSelect').value;
+  const err=document.getElementById('createError');
+  if(!routeId||!weapon){err.style.display='block';return}
+  err.style.display='none';
+  try{
+    const res=await fetch(`${API}/api/create`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({routeId,weapon})});
+    const data=await res.json();
+    if(data.error){err.textContent=data.error;err.style.display='block';return}
+    window.location.href=`/game.html?gameId=${data.gameId}&playerId=p1`;
+  }catch(e){err.textContent='Could not create game. Is the server running?';err.style.display='block'}
 }
-
-async function joinGame() {
-  const gameId = document.getElementById('gameCodeInput').value.trim().toUpperCase();
-  const weapon = document.getElementById('joinWeaponSelect').value;
-  const err = document.getElementById('joinError');
-  
-  if(!gameId || !weapon) { err.textContent = 'Enter a game code and select a weapon.'; err.style.display = 'block'; return; }
-  err.style.display = 'none';
-  
-  try {
-    const res = await fetch(`${API}/api/join`, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({gameId, weapon})
-    });
-    const data = await res.json();
-    if(data.error) { err.textContent = data.error; err.style.display = 'block'; return; }
-    
-    window.location.href = `/game.html?gameId=${data.gameId}&playerId=p2`;
-  } catch(e) {
-    err.textContent = 'Could not join game. Check the code and try again.';
-    err.style.display = 'block';
-  }
+async function joinGame(){
+  const gameId=document.getElementById('gameCodeInput').value.trim().toUpperCase();
+  const err=document.getElementById('joinError');
+  if(!gameId){err.textContent='Enter a game code.';err.style.display='block';return}
+  err.style.display='none';
+  try{
+    const res=await fetch(`${API}/api/join`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({gameId})});
+    const data=await res.json();
+    if(data.error){err.textContent=data.error;err.style.display='block';return}
+    window.location.href=`/game.html?gameId=${data.gameId}&playerId=p2`;
+  }catch(e){err.textContent='Could not join game.';err.style.display='block'}
 }
-
 loadOptions();
 </script>
 </body>
